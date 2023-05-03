@@ -3,21 +3,20 @@ import bg1 from '@/assets/bg1.svg';
 import bg2 from '@/assets/bg2.svg';
 import bg3 from '@/assets/bg3.svg';
 import SearchDropDown from '@/components/SearchDropDown';
-import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { useAppDispatch } from '@/hooks/redux';
 import { fetchRelatedWordsByKeyword } from '@/reducers/cacheSlice';
 import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../SearchBar';
 
 export default function Search() {
   const [keyword, setKeyword] = useState<string>('');
+  const [relatedWords, setRelatedWords] = useState([]);
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [listIndex, setListIndex] = useState<number>(-1);
   const [timer, setTimer] = useState<number>(0);
   const scrollRef = useRef<HTMLLIElement>(null);
 
   const dispatch = useAppDispatch();
-  const cache = useAppSelector(state => state.cache);
-  const relatedWords = cache[keyword];
 
   const toggleSearchMode = () => {
     setIsSearchMode(prev => !prev);
@@ -28,10 +27,10 @@ export default function Search() {
     if (timer) {
       clearTimeout(timer);
     }
-    const newTimer = setTimeout(() => {
-      if (cache[e.target.value] === undefined) {
-        dispatch(fetchRelatedWordsByKeyword(e.target.value));
-      }
+    const newTimer = setTimeout(async () => {
+      const result = await dispatch(fetchRelatedWordsByKeyword(e.target.value));
+      console.log(result.payload);
+      setRelatedWords(result.payload.relatedWords);
     }, 500);
     setTimer(newTimer);
   };
