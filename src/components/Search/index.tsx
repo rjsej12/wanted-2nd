@@ -3,14 +3,21 @@ import bg1 from '@/assets/bg1.svg';
 import bg2 from '@/assets/bg2.svg';
 import bg3 from '@/assets/bg3.svg';
 import SearchDropDown from '@/components/SearchDropDown';
+import { useAppDispatch, useAppSelector } from '@/hooks/redux';
+import { fetchRelatedWordsByKeyword } from '@/reducers/cacheSlice';
 import { useState } from 'react';
 
 export default function Search() {
-  const [keyword, setKeyword] = useState('');
+  const cache = useAppSelector(state => state.cache);
+  const dispatch = useAppDispatch();
+  const [keyword, setKeyword] = useState<string>('');
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
 
-  const onChangeSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onChangeSearchInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
+    if (cache[e.target.value] === undefined) {
+      dispatch(fetchRelatedWordsByKeyword(e.target.value));
+    }
   };
 
   return (
