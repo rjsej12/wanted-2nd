@@ -5,17 +5,23 @@ import bg3 from '@/assets/bg3.svg';
 import SearchDropDown from '@/components/SearchDropDown';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { fetchRelatedWordsByKeyword } from '@/reducers/cacheSlice';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import SearchBar from '../SearchBar';
 
 export default function Search() {
   const [keyword, setKeyword] = useState<string>('');
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [listIndex, setListIndex] = useState<number>(-1);
   const [timer, setTimer] = useState<number>(0);
+  const scrollRef = useRef<HTMLLIElement>(null);
 
   const dispatch = useAppDispatch();
   const cache = useAppSelector(state => state.cache);
   const relatedWords = cache[keyword];
+
+  const toggleSearchMode = () => {
+    setIsSearchMode(prev => !prev);
+  };
 
   const onChangeSearchInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -33,10 +39,15 @@ export default function Search() {
   const keyboardNavigation = e => {
     if (!relatedWords) return;
     if (e.key === 'ArrowDown') {
-      isSearchMode && setListIndex(listIndex + 1 > 6 ? 6 : listIndex + 1);
+      isSearchMode &&
+        setListIndex(
+          listIndex + 1 > relatedWords.length - 1 ? relatedWords.length - 1 : listIndex + 1
+        );
+      scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     if (e.key === 'ArrowUp') {
       isSearchMode && setListIndex(listIndex - 1 < 0 ? 0 : listIndex - 1);
+      scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
     if (e.key === 'Escape') {
       setListIndex(-1);
@@ -68,24 +79,26 @@ export default function Search() {
           온라인으로 참여하기
         </S.Title>
         <S.InputWrapper>
-          <S.EllipseBorder>
-            <S.Wrapper>
-              <S.SearchIcon1 />
-              <S.SearchInput
-                placeholder="질환명을 입력해 주세요."
-                value={keyword}
-                onChange={onChangeSearchInput}
-                onFocus={() => setIsSearchMode(true)}
-                onBlur={() => setIsSearchMode(false)}
-              />
-            </S.Wrapper>
-            <S.SearchButton>
-              <S.SearchIcon2 />
-            </S.SearchButton>
-          </S.EllipseBorder>
-          {isSearchMode && (
-            <SearchDropDown keyword={keyword} relatedWords={relatedWords} listIndex={listIndex} />
-          )}
+          <SearchBar
+            keyword={keyword}
+            isSearchMode={isSearchMode}
+            toggleSearchMode={toggleSearchMode}
+            onChangeSearchInput={onChangeSearchInput}
+          />
+          {/* {isSearchMode && (
+            <SearchDropDown
+              keyword={keyword}
+              relatedWords={relatedWords}
+              listIndex={listIndex}
+              scrollRef={scrollRef}
+            />
+          )} */}
+          <SearchDropDown
+            keyword={keyword}
+            relatedWords={relatedWords}
+            listIndex={listIndex}
+            scrollRef={scrollRef}
+          />
         </S.InputWrapper>
       </S.Container>
     </S.MainWrapper>

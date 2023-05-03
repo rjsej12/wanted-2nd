@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  width: 448px;
+  width: 490px;
   background-color: #fff;
   margin-top: 20px;
   padding: 20px 0;
   border-radius: 20px;
   position: absolute;
   max-height: 400px;
-  overflow-y: hidden;
+  overflow-y: scroll;
 `;
 
 export const Title = styled.h2`

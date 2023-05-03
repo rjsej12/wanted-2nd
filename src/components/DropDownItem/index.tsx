@@ -36,11 +36,12 @@ type DropDownItemProps = {
   keyword: string;
   word: string;
   selected: boolean;
+  scrollRef?: React.MutableRefObject<null>;
 };
 
-export default function DropDownItem({ keyword, word, selected }: DropDownItemProps) {
+export default function DropDownItem({ keyword, word, selected, scrollRef }: DropDownItemProps) {
   return (
-    <Wrapper selected={selected}>
+    <Wrapper selected={selected} ref={scrollRef}>
       <SearchIcon />
       {splitTextWithKeyword(word, keyword).map((text, index) => (
         <TextToken key={index} isMatched={keyword === text}>

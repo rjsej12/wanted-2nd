@@ -6,9 +6,15 @@ interface ISearchDropDownProps {
   keyword: string;
   relatedWords: CacheState[];
   listIndex: number;
+  scrollRef: React.MutableRefObject<null>;
 }
 
-export default function SearchDropDown({ keyword, relatedWords, listIndex }: ISearchDropDownProps) {
+export default function SearchDropDown({
+  keyword,
+  relatedWords,
+  listIndex,
+  scrollRef,
+}: ISearchDropDownProps) {
   return (
     <S.Wrapper>
       {keyword === '' && (
@@ -23,14 +29,24 @@ export default function SearchDropDown({ keyword, relatedWords, listIndex }: ISe
         {keyword !== '' && relatedWords && relatedWords.length !== 0 && (
           <>
             <S.Title>추천 검색어</S.Title>
-            {relatedWords.map((word, index) => (
-              <DropDownItem
-                key={word.id}
-                selected={listIndex === index}
-                keyword={keyword}
-                word={word.name}
-              />
-            ))}
+            {relatedWords.map((word, index) =>
+              index === listIndex ? (
+                <DropDownItem
+                  key={word.id}
+                  selected={listIndex === index}
+                  keyword={keyword}
+                  word={word.name}
+                  scrollRef={scrollRef}
+                />
+              ) : (
+                <DropDownItem
+                  key={word.id}
+                  selected={listIndex === index}
+                  keyword={keyword}
+                  word={word.name}
+                />
+              )
+            )}
           </>
         )}
       </S.DropDownList>
