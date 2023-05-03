@@ -15,7 +15,7 @@ export const fetchRelatedWordsByKeyword = createAsyncThunk(
   }
 );
 
-interface CacheState {
+export interface CacheState {
   name: string;
   id: number;
 }

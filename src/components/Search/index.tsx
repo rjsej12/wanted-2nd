@@ -5,14 +5,17 @@ import bg3 from '@/assets/bg3.svg';
 import SearchDropDown from '@/components/SearchDropDown';
 import { useAppDispatch, useAppSelector } from '@/hooks/redux';
 import { fetchRelatedWordsByKeyword } from '@/reducers/cacheSlice';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function Search() {
-  const cache = useAppSelector(state => state.cache);
-  const dispatch = useAppDispatch();
   const [keyword, setKeyword] = useState<string>('');
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
+  const [listIndex, setListIndex] = useState<number>(-1);
   const [timer, setTimer] = useState<number>(0);
+
+  const dispatch = useAppDispatch();
+  const cache = useAppSelector(state => state.cache);
+  const relatedWords = cache[keyword];
 
   const onChangeSearchInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
@@ -26,6 +29,32 @@ export default function Search() {
     }, 500);
     setTimer(newTimer);
   };
+
+  const keyboardNavigation = e => {
+    if (!relatedWords) return;
+    if (e.key === 'ArrowDown') {
+      isSearchMode && setListIndex(listIndex + 1 > 6 ? 6 : listIndex + 1);
+    }
+    if (e.key === 'ArrowUp') {
+      isSearchMode && setListIndex(listIndex - 1 < 0 ? 0 : listIndex - 1);
+    }
+    if (e.key === 'Escape') {
+      setListIndex(-1);
+      setIsSearchMode(false);
+    }
+    if (e.key === 'Enter') {
+      setKeyword(relatedWords[listIndex].name);
+      setListIndex(-1);
+      setIsSearchMode(false);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', keyboardNavigation);
+    return () => {
+      window.removeEventListener('keydown', keyboardNavigation);
+    };
+  }, [keyboardNavigation]);
 
   return (
     <S.MainWrapper>
@@ -54,7 +83,9 @@ export default function Search() {
               <S.SearchIcon2 />
             </S.SearchButton>
           </S.EllipseBorder>
-          {isSearchMode && <SearchDropDown keyword={keyword} />}
+          {isSearchMode && (
+            <SearchDropDown keyword={keyword} relatedWords={relatedWords} listIndex={listIndex} />
+          )}
         </S.InputWrapper>
       </S.Container>
     </S.MainWrapper>

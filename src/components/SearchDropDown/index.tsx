@@ -1,15 +1,14 @@
 import DropDownItem from '@/components/DropDownItem';
 import * as S from './styles';
-import { useAppSelector } from '@/hooks/redux';
+import { CacheState } from '@/reducers/cacheSlice';
 
 interface ISearchDropDownProps {
   keyword: string;
+  relatedWords: CacheState[];
+  listIndex: number;
 }
 
-export default function SearchDropDown({ keyword }: ISearchDropDownProps) {
-  const cache = useAppSelector(state => state.cache);
-  const relatedWords = cache[keyword];
-
+export default function SearchDropDown({ keyword, relatedWords, listIndex }: ISearchDropDownProps) {
   return (
     <S.Wrapper>
       {keyword === '' && (
@@ -19,17 +18,22 @@ export default function SearchDropDown({ keyword }: ISearchDropDownProps) {
           <S.Message>최근 검색어가 없습니다</S.Message>
         </>
       )}
-      {keyword !== '' && <DropDownItem keyword={keyword} word={keyword} />}
-      {keyword !== '' && relatedWords && relatedWords.length !== 0 && (
-        <>
-          <S.Title>추천 검색어</S.Title>
-          <S.DropDownList>
-            {relatedWords.map(word => (
-              <DropDownItem key={word.id} keyword={keyword} word={word.name} />
+      <S.DropDownList>
+        {keyword !== '' && <DropDownItem keyword={keyword} word={keyword} selected={false} />}
+        {keyword !== '' && relatedWords && relatedWords.length !== 0 && (
+          <>
+            <S.Title>추천 검색어</S.Title>
+            {relatedWords.map((word, index) => (
+              <DropDownItem
+                key={word.id}
+                selected={listIndex === index}
+                keyword={keyword}
+                word={word.name}
+              />
             ))}
-          </S.DropDownList>
-        </>
-      )}
+          </>
+        )}
+      </S.DropDownList>
     </S.Wrapper>
   );
 }
