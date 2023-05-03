@@ -5,7 +5,12 @@ import styled from 'styled-components';
 const Wrapper = styled.li`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+  :hover {
+    background-color: rgb(244, 246, 250);
+  }
 `;
 
 const SearchIcon = styled(SearchOutlined)`
