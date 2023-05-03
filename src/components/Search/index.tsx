@@ -85,20 +85,14 @@ export default function Search() {
             toggleSearchMode={toggleSearchMode}
             onChangeSearchInput={onChangeSearchInput}
           />
-          {/* {isSearchMode && (
+          {isSearchMode && (
             <SearchDropDown
               keyword={keyword}
               relatedWords={relatedWords}
               listIndex={listIndex}
               scrollRef={scrollRef}
             />
-          )} */}
-          <SearchDropDown
-            keyword={keyword}
-            relatedWords={relatedWords}
-            listIndex={listIndex}
-            scrollRef={scrollRef}
-          />
+          )}
         </S.InputWrapper>
       </S.Container>
     </S.MainWrapper>
