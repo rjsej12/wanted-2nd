@@ -1,3 +1,5 @@
+import Search from '@/components/Search';
+
 export default function App() {
-  return <></>;
+  return <Search />;
 }
