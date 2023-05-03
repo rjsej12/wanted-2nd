@@ -12,12 +12,19 @@ export default function Search() {
   const dispatch = useAppDispatch();
   const [keyword, setKeyword] = useState<string>('');
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
+  const [timer, setTimer] = useState<number>(0);
 
   const onChangeSearchInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-    if (cache[e.target.value] === undefined) {
-      dispatch(fetchRelatedWordsByKeyword(e.target.value));
+    if (timer) {
+      clearTimeout(timer);
     }
+    const newTimer = setTimeout(() => {
+      if (cache[e.target.value] === undefined) {
+        dispatch(fetchRelatedWordsByKeyword(e.target.value));
+      }
+    }, 500);
+    setTimer(newTimer);
   };
 
   return (
