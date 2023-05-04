@@ -6,7 +6,7 @@ interface ISearchDropDownProps {
   keyword: string;
   relatedWords: CacheState[];
   listIndex: number;
-  scrollRef: React.MutableRefObject<null>;
+  scrollRef: React.RefObject<HTMLLIElement>;
 }
 
 export default function SearchDropDown({

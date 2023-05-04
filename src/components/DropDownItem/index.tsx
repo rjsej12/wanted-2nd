@@ -36,7 +36,7 @@ type DropDownItemProps = {
   keyword: string;
   word: string;
   selected: boolean;
-  scrollRef?: React.MutableRefObject<null>;
+  scrollRef?: React.RefObject<HTMLLIElement>;
 };
 
 export default function DropDownItem({ keyword, word, selected, scrollRef }: DropDownItemProps) {
