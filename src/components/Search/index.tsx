@@ -7,14 +7,16 @@ import { useAppDispatch } from '@/hooks/redux';
 import { fetchRelatedWordsByKeyword } from '@/reducers/cacheSlice';
 import { useEffect, useRef, useState } from 'react';
 import SearchBar from '../SearchBar';
+import useDebounce from '@/hooks/useDebounce';
 
 export default function Search() {
   const [keyword, setKeyword] = useState<string>('');
   const [relatedWords, setRelatedWords] = useState([]);
   const [isSearchMode, setIsSearchMode] = useState<boolean>(false);
   const [listIndex, setListIndex] = useState<number>(-1);
-  const [timer, setTimer] = useState<number>(0);
+
   const scrollRef = useRef<HTMLLIElement>(null);
+  const debounceKeyword = useDebounce({ value: keyword, delay: 500 });
 
   const dispatch = useAppDispatch();
 
@@ -24,15 +26,6 @@ export default function Search() {
 
   const onChangeSearchInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setKeyword(e.target.value);
-    if (timer) {
-      clearTimeout(timer);
-    }
-    const newTimer = setTimeout(async () => {
-      const result = await dispatch(fetchRelatedWordsByKeyword(e.target.value));
-      console.log(result.payload);
-      setRelatedWords(result.payload.relatedWords);
-    }, 500);
-    setTimer(newTimer);
   };
 
   const keyboardNavigation = e => {
@@ -50,12 +43,10 @@ export default function Search() {
     }
     if (e.key === 'Escape') {
       setListIndex(-1);
-      setIsSearchMode(false);
     }
     if (e.key === 'Enter') {
       setKeyword(relatedWords[listIndex].name);
       setListIndex(-1);
-      setIsSearchMode(false);
     }
   };
 
@@ -65,6 +56,14 @@ export default function Search() {
       window.removeEventListener('keydown', keyboardNavigation);
     };
   }, [keyboardNavigation]);
+
+  useEffect(() => {
+    const fetchRelatedWords = async () => {
+      const result = await dispatch(fetchRelatedWordsByKeyword(keyword));
+      setRelatedWords(result.payload.relatedWords);
+    };
+    fetchRelatedWords();
+  }, [debounceKeyword]);
 
   return (
     <S.MainWrapper>
