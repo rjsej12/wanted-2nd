@@ -1,13 +1,18 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const fetchByKeyword = async (keyword: string) => {
-  const result = await axios.get(`/api/?name=${keyword}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    console.info('calling api');
+    const result = await axios.get(`/api/?name=${keyword}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  return result.data;
+    return result.data;
+  } catch (error) {
+    if (error instanceof AxiosError) alert(error);
+  }
 };
 
 export const searchAPI = {

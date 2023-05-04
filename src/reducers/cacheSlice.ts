@@ -10,7 +10,6 @@ export const fetchRelatedWordsByKeyword = createAsyncThunk(
     const cache = getState().cache;
     if (cache[keyword] !== undefined) return { keyword, relatedWords: cache[keyword] };
     try {
-      console.info('calling api');
       const response = await searchAPI.fetchByKeyword(keyword);
       setTimeout(() => {
         dispatch(removeRelatedWords({ keyword }));
